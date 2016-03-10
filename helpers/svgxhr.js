@@ -19,8 +19,14 @@ function svgXHR(url, baseUrl) {
       baseUrl = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
     }
   }
+  
+  if (url.indexOf('//') > -1) {
+    _ajax.open('GET', url, true);  
+  } else {
+    _ajax.open('GET', baseUrl + '/' + url, true);
+  }
 
-  _ajax.open('GET', baseUrl + '/' + url, true);
+  
 
   _ajax.onprogress = function(){};
 
