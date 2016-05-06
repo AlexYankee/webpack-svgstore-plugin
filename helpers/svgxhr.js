@@ -27,8 +27,6 @@ function svgXHR(url, baseUrl) {
     _ajax.open('GET', baseUrl + '/' + url, true);
   }
 
-  _ajax.open('GET', _fullPath, true);
-
   _ajax.onprogress = function(){};
 
   _ajax.onload = function() {
