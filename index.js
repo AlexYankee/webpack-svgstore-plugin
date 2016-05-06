@@ -69,7 +69,7 @@ WebpackSvgStore.prototype.apply = function(compiler) {
       utils.filesMap(inputFolder, function(files) {
         if (!utils.filesChanged(files)){
           injectXhr(options, compilation, lastXhrText);
-          return;
+          return callback();
         }
 
         var fullPath;
