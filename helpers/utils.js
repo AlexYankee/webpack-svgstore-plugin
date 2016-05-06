@@ -8,7 +8,10 @@ var util = require('util');
 var jade = require('jade');
 var Svgo = require('svgo');
 var crypto = require('crypto');
+var globby = require('globby');
 var parse = require('htmlparser2');
+
+var fileCache = {};
 
 /**
  * Create sprite
@@ -167,6 +170,19 @@ var _convertFilenameToId = function(filename) {
 };
 
 /**
+ * Build files map
+ * @param  {string} input Destination path
+ * @return {array}        Array of paths
+ */
+var _filesMap = function(input, cb) {
+  var data = input;
+
+  globby(data).then(function(fileList) {
+    cb(fileList);
+  });
+};
+
+/**
  * Parse dom objects
  * @param  {[type]} dom [description]
  * @return {[type]}     [description]
@@ -239,6 +255,28 @@ var _parseFiles = function(files, options) {
 };
 
 /**
+ * Check files have changed
+ * @param  {[path]}
+ * @return {bool}
+ */
+var _filesChanged = function(files) {
+  var result = false;
+  try {
+    for (var i = 0; i < files.length; i++) {
+      var filepath = files[i];
+      var fstat = fs.statSync(filepath);
+      if (fstat.mtime > (fileCache[filepath] || 0)) {
+        fileCache[filepath] = fstat.mtime;
+        result = true;
+      }
+    }
+  } catch (e) {
+    result = true;
+  }
+  return result;
+};
+
+/**
  * Check folder
  * @param  {[type]} path [description]
  * @return {[type]}      [description]
@@ -294,6 +332,13 @@ module.exports.log = _log;
  * @return {[type]} [description]
  */
 module.exports.parseFiles = _parseFiles;
+
+/**
+ * Build files map
+ * @param  {string} input Destination path
+ * @return {array}        Array of paths
+ */
+module.exports.filesMap = _filesMap;
 
 /**
  * Parse dom objects
@@ -360,3 +405,9 @@ module.exports.minify = _minify;
  */
 module.exports.createSprite = _createSprite;
 
+/**
+ * Check files have changed
+ * @param  {[path]}
+ * @return {bool}
+ */
+module.exports.filesChanged = _filesChanged;
