@@ -21,11 +21,16 @@ function svgXHR(url, baseUrl) {
     }
   }
   
-  if (url.indexOf('//') > -1) {
-    _ajax.open('GET', url, true);  
+  var urlParts = (baseUrl + url).replace('.//', '').split('://');
+  var universalSchema = url.indexOf('//') === 0;
+
+  if (universalSchema) {
+    url = '//' + url.slice(2).replace(/\/{2,}/g, '/');
   } else {
-    _ajax.open('GET', baseUrl + '/' + url, true);
+    url = (urlParts.length === 2 ? urlParts[0] + '://' : '') + urlParts.pop().replace(/\/{2,}/g, '/');
   }
+
+  _ajax.open('GET', url, true);
 
   _ajax.onprogress = function(){};
 
