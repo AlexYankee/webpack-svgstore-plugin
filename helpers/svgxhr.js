@@ -21,7 +21,14 @@ function svgXHR(url, baseUrl) {
     }
   }
   
-  var urlParts = (baseUrl + url).replace('.//', '').split('://');
+  var urlParts;
+
+  if (url.indexOf('://') > -1) {
+    urlParts = url.split('://');
+  } else {
+    urlParts = (baseUrl + url).replace('.//', '').split('://');
+  }
+
   var universalSchema = url.indexOf('//') === 0;
 
   if (universalSchema) {
@@ -29,7 +36,7 @@ function svgXHR(url, baseUrl) {
   } else {
     url = (urlParts.length === 2 ? urlParts[0] + '://' : '') + urlParts.pop().replace(/\/{2,}/g, '/');
   }
-
+  
   _ajax.open('GET', url, true);
 
   _ajax.onprogress = function(){};
